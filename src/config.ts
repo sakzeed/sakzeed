@@ -20,4 +20,4 @@ export const SOCIALS: { label: string; href: string }[] = [
 // ฟอร์มติดต่อ ใช้ Web3Forms (ฟรี) — สมัครที่ https://web3forms.com ด้วยอีเมลที่จะรับข้อความ
 // แล้วเอา Access Key มาใส่ตรงนี้ (key นี้ออกแบบให้อยู่ในหน้าเว็บได้ ไม่ใช่รหัสลับ)
 // ถ้าเว้นว่าง หน้าติดต่อจะแสดงข้อความว่ายังไม่เปิดฟอร์ม
-export const WEB3FORMS_ACCESS_KEY = '';
+export const WEB3FORMS_ACCESS_KEY = '43c32d96-c577-4fbd-9eda-84ffb1bdd0fa';
