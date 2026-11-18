@@ -10,5 +10,6 @@
   },
   "dependencies": {
     "astro": "7.4.12"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }
