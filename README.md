@@ -1,7 +1,9 @@
 # พอร์ตโฟลิโอ + บล็อก
 
 เว็บพอร์ตโฟลิโอและบล็อก ให้คนที่จะจ้างงานดู สร้างด้วย [Astro](https://astro.build)
-ไม่มีฐานข้อมูล (เนื้อหาเป็นไฟล์ Markdown) และ deploy บน Cloudflare Pages
+ไม่มีฐานข้อมูล (เนื้อหาเป็นไฟล์ Markdown) และ deploy บน Cloudflare Workers
+
+เว็บจริง: https://portfolio.saharatyok.workers.dev
 
 ## แก้เนื้อหา
 
@@ -53,16 +55,32 @@ yarn dev            # http://127.0.0.1:4321
 yarn build          # สร้างไฟล์จริงใน dist/
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers)
 
-1. สมัครบัญชีที่ https://dash.cloudflare.com/sign-up
-2. Workers & Pages → Create → แท็บ Pages → Connect to Git → เลือก GitHub บัญชี `sakzeed` → อนุญาต repo `portfolio`
-3. ตั้งค่า build:
-   - Framework preset: **Astro**
-   - Build command: `yarn build`
-   - Build output directory: `dist`
-4. กด Save and Deploy จะได้ที่อยู่แบบ `https://portfolio-xxx.pages.dev`
-5. เอาที่อยู่นั้นมาใส่ `site` ใน `astro.config.mjs` แล้ว push อีกรอบ
+เว็บผูกกับ repo นี้ผ่าน Workers Builds แล้ว **push ขึ้น `main` = เว็บจริงอัปเดตเองภายในประมาณ 1 นาที**
+(ไม่ต้องรันคำสั่ง deploy บนเครื่อง)
+
+ทุกครั้งที่ push Cloudflare จะทำตามนี้:
+
+1. ติดตั้ง Node ตาม `.node-version` (22) และ Yarn ตาม `packageManager` ใน `package.json` (1.22.22)
+2. `yarn install` ตาม `yarn.lock`
+3. `yarn build` ได้ไฟล์เว็บใน `dist/`
+4. `npx wrangler deploy` อ่านค่าจาก `wrangler.jsonc` แล้วอัปโหลด `dist/` ขึ้น Worker ชื่อ `portfolio`
+
+ไฟล์ที่เกี่ยวข้อง:
+
+| ไฟล์ | หน้าที่ |
+|---|---|
+| `wrangler.jsonc` | ชื่อ Worker, โฟลเดอร์ที่จะเสิร์ฟ (`dist`) และให้ใช้ `404.html` เมื่อไม่พบหน้า |
+| `.node-version` | เวอร์ชัน Node ที่ใช้ build |
+| `package.json` → `packageManager` | ล็อก Yarn 1 ไว้ ถ้าลบ Cloudflare จะใช้ Yarn 4 แล้ว build ล้ม เพราะ `yarn.lock` เป็นของ Yarn 1 |
+| `public/_headers` | security headers ที่ Cloudflare ส่งไปกับทุกหน้า |
+
+ดูสถานะหรือ log ตอน build ล้ม: https://dash.cloudflare.com → **Workers & Pages** → `portfolio` → **Deployments**
+(ถ้า log ขึ้น `yarn@4.x` ให้เพิ่มตัวแปร `YARN_VERSION` = `1.22.22` ที่ **Settings → Build → Variables and secrets**)
+
+ใช้โดเมนของตัวเอง: `portfolio` → **Settings → Domains & Routes → Add → Custom domain**
+แล้วแก้ `site` ใน `astro.config.mjs` เป็นโดเมนใหม่ และ push อีกรอบ
 
 ## ความปลอดภัย
 
